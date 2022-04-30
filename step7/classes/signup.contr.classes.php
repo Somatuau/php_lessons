@@ -1,6 +1,6 @@
 <?php
 
-class SignupContr {
+class SignupContr extends Signup {
 
     private $uid;
     private $pwd;
@@ -8,15 +8,44 @@ class SignupContr {
     private $email;
 
     public function _construct ($uid, $pwd, $pwdRepeat, $email) {
-        $this->$uid =$uid;
-        $this->$pwd =$pwd;
-        $this->$pwdRepeat =$pwdRepeat;
-        $this->$email=$email;
+        $this->uid =$uid;
+        $this->pwd =$pwd;
+        $this->pwdRepeat =$pwdRepeat;
+        $this->email=$email;
+    }
+
+    public function signupUsers() {
+        if($this->emptyInput() == false) {
+            // echo "Empty input!";
+            header("location: ../index.php?error=emptyinput");
+            exit();
+        }
+        if($this->invalidUid() == false) {
+            // echo "Invalid username!";
+            header("location: ../index.php?error=emptyinput");
+            exit();
+        }
+        if($this->invalidEmail() == false) {
+            // echo "Empty email!";
+            header("location: ../index.php?error=emptyinput");
+            exit();
+        }
+        if($this->pwdMatch() == false) {
+            // echo "Passwords don't match!";
+            header("location: ../index.php?error=emptyinput");
+            exit();
+        }
+        if($this->uidTakenCheck() == false) {
+            // echo "Username or email taken!";
+            header("location: ../index.php?error=emptyinput");
+            exit();
+        }
+        $this->setUser($this->$uid, $this->$pwd, $this->$email);
     }
     
     private function emptyInput() {
         $result;
-        if(empty($this->$uid) || empty($this->$pwd) || empty($this->$pwdRepeat) || empty($this->$email)) {
+        if(empty($this->uid) || empty($this->pwd) || empty($this->pwdRepeat) || empty($this->email)) {
             $result = false;
         }
         else {
@@ -48,10 +77,23 @@ class SignupContr {
                 $result = true;
             }
             return $result;
-    }
+        }
+        
         private function pwdMatch() {
             $result
             if ($this->pwd !== $this->pwdRepeat)
+            {
+                $result = false;
+            }
+            else
+            {
+                $result = true;
+            }
+            return $result;
+    }
+        private function uidTakenCheck() {
+            $result
+            if (!$this->CheckUser($this->uid, $this->email))
             {
                 $result = false;
             }
